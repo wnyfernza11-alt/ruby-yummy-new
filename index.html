@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFB7C5">
+  <title>RUBY YUMMY - บัตรสะสมแต้มร้านRUBY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mali:wght@400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="in-auth">
+  <div class="app" id="app">
+
+    <!-- ส่วนหัว -->
+    <header class="app-header">
+      <div class="brand">
+        <img class="brand-logo" src="logo.png" alt="โลโก้ร้าน RUBY YUMMY">
+        <div>
+          <h1 class="brand-name">RUBY YUMMY</h1>
+          <p class="brand-sub">ร้านอาหารเกาหลี • สะสมแต้มหัวใจ 💕</p>
+        </div>
+      </div>
+      <div class="header-user" id="headerUser" hidden>
+        <span class="header-user-name" id="headerUserName"></span>
+        <button class="btn-logout" id="logoutBtn" type="button">ออกจากระบบ 👋</button>
+      </div>
+    </header>
+
+    <main class="app-main">
+
+      <!-- ===================== หน้าเข้าสู่ระบบ ===================== -->
+      <section id="authView" class="view">
+        <div class="auth-hero">
+          <div class="auth-emoji">🐻💕🐱</div>
+          <h2>ยินดีต้อนรับสู่ RUBY YUMMY</h2>
+          <p>เข้าสู่ระบบเพื่อสะสมแต้มหัวใจและแลกรางวัล</p>
+        </div>
+
+        <!-- ลูกค้า -->
+        <div id="customerAuth">
+          <div class="auth-tabs">
+            <button type="button" class="auth-tab active" data-auth="login">เข้าสู่ระบบ</button>
+            <button type="button" class="auth-tab" data-auth="register">สมัครสมาชิก</button>
+          </div>
+
+          <form id="loginForm" class="card-form" novalidate>
+            <label class="field">
+              <span>ชื่อผู้ใช้งาน</span>
+              <input type="text" id="loginName" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="30" autocomplete="username" placeholder="ชื่อผู้ใช้งานของคุณ">
+            </label>
+            <label class="field">
+              <span>รหัสผ่าน</span>
+              <input type="password" id="loginPw" autocomplete="current-password" placeholder="รหัสผ่าน">
+            </label>
+            <button type="submit" class="btn btn-primary">เข้าสู่ระบบ 🐱</button>
+          </form>
+
+          <form id="registerForm" class="card-form" hidden novalidate>
+            <label class="field">
+              <span>ตั้งชื่อผู้ใช้งานภาษาไทยหรืออังกฤษ</span>
+              <input type="text" id="regName" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="30" autocomplete="username" placeholder="เช่น รูบี้">
+            </label>
+            <label class="field">
+              <span>ตั้งรหัสผ่าน (อย่างน้อย 4 ตัวอักษร)</span>
+              <input type="password" id="regPw" autocomplete="new-password" placeholder="รหัสผ่าน">
+            </label>
+            <label class="field">
+              <span>ยืนยันรหัสผ่าน</span>
+              <input type="password" id="regPw2" autocomplete="new-password" placeholder="พิมพ์รหัสผ่านอีกครั้ง">
+            </label>
+            <button type="submit" class="btn btn-primary">สมัครสมาชิก 💕</button>
+          </form>
+
+          <button type="button" class="link-btn" id="toAdminLogin">🔒 สำหรับแอดมิน</button>
+        </div>
+
+        <!-- แอดมิน -->
+        <div id="adminAuth" hidden>
+          <form id="adminLoginForm" class="card-form" novalidate>
+            <div class="admin-login-title">🔒 เข้าสู่ระบบแอดมิน</div>
+            <label class="field">
+              <span>รหัสผ่านแอดมิน</span>
+              <input type="password" id="adminPw" autocomplete="off" placeholder="กรอกรหัสผ่านแอดมิน">
+            </label>
+            <button type="submit" class="btn btn-brown">เข้าสู่ระบบแอดมิน 🐻</button>
+          </form>
+          <button type="button" class="link-btn" id="toCustomerLogin">← กลับไปหน้าลูกค้า</button>
+        </div>
+      </section>
+
+      <!-- ===================== ฝั่งลูกค้า (แสดงหลังเข้าสู่ระบบเท่านั้น) ===================== -->
+      <section id="customerView" class="view" hidden>
+
+        <!-- แท็บ: หน้าแรก -->
+        <div class="tab-page active" id="tab-home">
+          <div class="loyalty-card">
+            <div class="card-deco deco-1">🐻</div>
+            <div class="card-deco deco-2">🐱</div>
+            <div class="card-deco deco-3">💕</div>
+            <p class="card-label">บัตรสะสมแต้มของ</p>
+            <h2 class="card-name" id="cardName">-</h2>
+            <div class="card-points">
+              <span class="points-num" id="cardPoints">0</span>
+              <span class="points-unit">แต้มหัวใจ 💕</span>
+            </div>
+            <div class="hearts-row" id="heartsRow"></div>
+            <p class="card-next" id="cardNext"></p>
+          </div>
+
+          <div class="info-box">
+            <h3>📖 กฎการสะสมแต้ม</h3>
+            <ul>
+              <li>โอนเงิน <b>1 สลิป</b> = <b>1 แต้มหัวใจ 💕</b></li>
+              <li>แนบสลิปแจ้งที่เมนู "แจ้งโอน" แล้วรอแอดมินตรวจสอบ</li>
+              <li>แอดมินอนุมัติแล้วแต้มจะเข้าบัตรทันที 🐱</li>
+              <li>สะสมครบ <b>10 แต้ม</b> กดแลกรางวัลได้เลย!</li>
+              <li>เมื่อกดแลกรางวัล แต้มสะสมทั้งหมดจะรีเซ็ตเป็น 0</li>
+            </ul>
+          </div>
+
+          <div class="section-title">🎁 ของรางวัล</div>
+          <div class="reward-list" id="rewardList"></div>
+        </div>
+
+        <!-- แท็บ: แจ้งโอน -->
+        <div class="tab-page" id="tab-upload">
+          <div class="section-title">🧾 แจ้งโอนสลิป</div>
+          <form id="slipForm" class="card-form" novalidate>
+            <label class="field">
+              <span>ยอดเงินที่โอน (บาท)</span>
+              <input type="number" id="slipAmount" min="1" step="1" inputmode="numeric" placeholder="เช่น 350">
+            </label>
+            <p class="hint">สลิป 1 ใบ จะได้รับ 1 แต้มหัวใจ 💕 เมื่อแอดมินอนุมัติ</p>
+
+            <div class="field">
+              <span>แนบรูปสลิปโอนเงิน</span>
+              <label class="upload-box" id="uploadBox" for="slipFile">
+                <input type="file" id="slipFile" accept="image/*" hidden>
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                  <div class="upload-emoji">🐻📷</div>
+                  <p>แตะเพื่อเลือกรูปสลิป</p>
+                </div>
+                <img id="slipPreview" class="slip-preview" alt="ตัวอย่างสลิป" hidden>
+              </label>
+              <button type="button" class="btn btn-ghost small" id="removePreview" hidden>🗑️ ลบรูป / เลือกใหม่</button>
+            </div>
+
+            <button type="submit" class="btn btn-primary">ส่งสลิปให้แอดมินตรวจสอบ 💌</button>
+          </form>
+        </div>
+
+        <!-- แท็บ: ประวัติ -->
+        <div class="tab-page" id="tab-history">
+          <div class="section-title">📋 ประวัติการส่งสลิป</div>
+          <div id="slipHistory" class="slip-list"></div>
+
+          <div class="section-title">🎁 ประวัติการแลกรางวัล</div>
+          <div id="redeemHistory" class="slip-list"></div>
+        </div>
+
+        <!-- แท็บ: โปรไฟล์ -->
+        <div class="tab-page" id="tab-profile">
+          <div class="section-title">🐱 โปรไฟล์ของฉัน</div>
+          <form id="profileForm" class="card-form" novalidate>
+            <label class="field">
+              <span>ชื่อผู้ใช้งาน</span>
+              <input type="text" id="profName" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="30" placeholder="ชื่อของคุณ">
+            </label>
+            <label class="field">
+              <span>รหัสผ่านใหม่ (เว้นว่างไว้หากไม่ต้องการเปลี่ยน)</span>
+              <input type="password" id="profPw" autocomplete="new-password" placeholder="อย่างน้อย 4 ตัวอักษร">
+            </label>
+            <button type="submit" class="btn btn-primary">บันทึกโปรไฟล์ 💕</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- ฝั่งแอดมิน: เนื้อหาจะถูกสร้างหลังใส่รหัสผ่านแอดมินถูกต้องเท่านั้น -->
+      <section id="adminView" class="view" hidden></section>
+    </main>
+
+    <!-- เมนูด้านล่าง (ลูกค้า) -->
+    <nav class="bottom-nav" id="bottomNav">
+      <button class="nav-btn active" data-tab="home"><span>🏠</span><small>หน้าแรก</small></button>
+      <button class="nav-btn" data-tab="upload"><span>🧾</span><small>แจ้งโอน</small></button>
+      <button class="nav-btn" data-tab="history"><span>📋</span><small>ประวัติ</small><i class="nav-badge" id="navBadge" hidden>0</i></button>
+      <button class="nav-btn" data-tab="profile"><span>🐱</span><small>โปรไฟล์</small></button>
+    </nav>
+  </div>
+
+  <!-- โมดัลข้อความ / ยืนยัน -->
+  <div class="modal-overlay" id="modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-icon" id="modalIcon">🐻</div>
+      <h3 id="modalTitle">แจ้งเตือน</h3>
+      <p id="modalMsg"></p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modalCancel">ยกเลิก</button>
+        <button class="btn btn-primary" id="modalOk">ตกลง</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- โมดัลดูรูปสลิป -->
+  <div class="modal-overlay" id="imgModal" hidden>
+    <div class="img-modal-box">
+      <button class="img-close" id="imgClose" aria-label="ปิด">✕</button>
+      <img id="imgModalSrc" alt="รูปสลิปโอนเงิน">
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
